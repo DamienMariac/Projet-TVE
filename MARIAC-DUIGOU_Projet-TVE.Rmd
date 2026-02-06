@@ -186,7 +186,7 @@ seuil pas top déconnant avec un peu plus de 15% de dépassement de seuil.
 
 Choix de maximum en prenant les max par années, ce qui représente peu de données (52 observations) Ce choix facilitait les calculs des value at risk car les période était en années. 
 
-Reprendre l'étude avec des maximas par jour pour avoir plus d'observations ?
+Reprendre l'étude avec des maximas par jour/mois (attention à la dépendance dûe à la saisonnalité) pour avoir plus d'observations ?
 
 
 
