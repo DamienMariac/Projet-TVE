@@ -17,19 +17,19 @@ load("donneesVagues.RData")
 library(dplyr)
 library(lubridate)
 
-Sa=data.frame("date"=donneesVague$date,"station4"=donneesVague$station4)
-Sb=data.frame("date"=donneesVague$date,"station12"=donneesVague$station12)
+Sa=data.frame("date"=donneesVague$date,"station6"=donneesVague$station6)
+Sb=data.frame("date"=donneesVague$date,"station14"=donneesVague$station14)
 
 Sa$date=as.POSIXct(Sa$date)
 Sb$date=as.POSIXct(Sb$date)
 Sa = Sa %>%
   mutate(year = year(date)) %>%
   group_by(year) %>%
-  summarise(waves_length = max(station4, na.rm = TRUE))
+  summarise(waves_length = max(station6, na.rm = TRUE))
 Sb = Sb %>%
   mutate(year = year(date)) %>%
   group_by(year) %>%
-  summarise(waves_length = max(station12, na.rm = TRUE))
+  summarise(waves_length = max(station14, na.rm = TRUE))
 ```
 
 # PARTIE 1
@@ -60,12 +60,12 @@ L'intervalle de confiance de gamma est très large...On peut pas savoir dans que
 
 Avec vraissemblance profilé 
 ```{r}
-profiled_llh=gev.profxi(GEVa,xlow=-0.6,xup=0.4,conf=0.95,nint=100)
+profiled_llh=gev.profxi(GEVa,xlow=-1,xup=1,conf=0.95,nint=100)
 profiled_llh$conf
 ```
 IC trop difficile à estimer via vraissemblance profilée donc renvoie NULL.
 
-Le mle donne un gamma proche de 0 donc peut être domaine d'attraction de Gumbell.
+Le mle donne un gamma négatif et la borne sup de l'IC environ égale à 0 donc peut être domaine d'attraction de Weibull.
 
 Estimation de la value at risk pour les période 100,500,1000 ans 
 ```{r}
@@ -90,9 +90,6 @@ xq3
 ```{r}
 gev.diag(GEVa)
 ```
-Return level plot à peu près linéaire ce qui "valide" l'hypothèse gamma=0 domaine d'attraction de Gumbell
-
-
 
 ### Avec fgev
 
@@ -104,18 +101,20 @@ fgev(Sa$waves_length,prob=q2)
 fgev(Sa$waves_length,prob=q3)
 ```
 
-Résultats similaires avec gev.fit
+Résultats proches de gev.fit
 
 ####TODO#### Intervalles de confiance
 
 ### Fitter directement une gumbell
 
-On a vu que l'hypothèse gamma=0 est pas trop irréaliste donc on décide d'ajuster directement notre modèle avec une gumbell :
+On a vu que 0 appartient à l'IC de gamma donc on poourrait fitter un modèle de Gumbell puis faire un test statistique pour valider ou non un tel modèle.
 
 ```{r}
 GUMa=gum.fit(Sa$waves_length)
 gum.diag(GUMa)
 ```
+Quantile plot très bof pour les fortes valeurs. Mais pour le modèle gev.fit il n'allait pas au-delà de 8.5. Pour les valeurs en dessous de 8.5 les deux graph sont raisonnablement les mêmes. Le return level plot semble dépasser les IC du graph pour des value at risk proches de 100. Cependant l'histogramme de fréquence semble plus en adéquation avec le modèle que pour la gev.
+
 
 On peut redonner les Value at risk avec ce nouvel ajustement 
 ```{r}
@@ -127,6 +126,7 @@ xqg1
 xqg2
 xqg3
 ```
+bien plus élevés que pour le précédent modèle.
 
 ### Comparaison de modèle
 
@@ -140,10 +140,10 @@ l2=-GUMa$nllh
 D=2*(l1-l2)
 D
 ```
-On remarque que D<3.84 (quantile d'ordre 0.95 d'une khi2(1))
-Donc avec un risque de 5% on garde l'hypothèse gamma=0.
+On remarque que D<3.84 (quantile d'ordre 0.95 d'une khi2(1)) (valeurs proches)
+Donc avec un risque de 5% on garde l'hypothèse gamma=0. a discuter...
 
-Meilleur modèle : GUMa qui donne les value at risk  :
+"Meilleur" modèle : GUMa qui donne les value at risk  :
 ```{r}
 xqg1
 xqg2
@@ -155,21 +155,21 @@ xqg3
 ```{r}
 mrlplot(Sa$waves_length)
 ```
-à peu près constant à partir du seuil 4.2 (environ) qu'on choisit de retenir.
-Constance indique gamma=0 domaine d'attraction de gumbel (cohérent) 
-Choix précedent : seuil à 3.9 mais 30% de dépassement ce qui est assez élevé.
+à peu près linéraire (décroissant) à partir du seuil 7.5 (environ) qu'on choisit de retenir comme seuil partir duquel on considère que les dépassments suivent une gpd.
+Décroissance indique gamma<0 domaine d'attraction de Weibull (cohérent) 
+Choix du précédent seuil : 7 mais 40% de dépassement ce qui est élevé.
 
 value at risk pour 100,500,1000 ans 
 ```{r}
-GPDa100=fpot(Sa$waves_length,4.2,npp=1,mper=100)
+GPDa100=fpot(Sa$waves_length,7.5,npp=1,mper=100,std.err = FALSE)
 xpot1=GPDa100$estimate[1]
 par(mfrow=c(2,2))
 plot(GPDa100)
-GPDa500=fpot(Sa$waves_length,4.2,npp=1,mper=500)
+GPDa500=fpot(Sa$waves_length,7.5,npp=1,mper=500)
 xpot2=GPDa500$estimate[1]
 par(mfrow=c(2,2))
 plot(GPDa500)
-GPDa1000=fpot(Sa$waves_length,4.2,npp=1,mper=1000)
+GPDa1000=fpot(Sa$waves_length,7.5,npp=1,mper=1000,std.err = FALSE)
 xpot3=GPDa1000$estimate[1]
 par(mfrow=c(2,2))
 plot(GPDa1000)
@@ -181,8 +181,8 @@ GPDa100
 ```
 
 Estimations inférieures aux estimations par gumbell (modèle retenu pour la méthode gev). 
-à voir avec intervalles de confiances (à faire)
-seuil pas top déconnant avec un peu plus de 15% de dépassement de seuil.
+seuil à revoir car environ 23% de dépassement
+Les graph sont vraiment pas top...
 
 Choix de maximum en prenant les max par années, ce qui représente peu de données (52 observations) Ce choix facilitait les calculs des value at risk car les période était en années. 
 
