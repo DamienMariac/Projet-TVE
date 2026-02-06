@@ -32,9 +32,164 @@ Sb = Sb %>%
   summarise(waves_length = max(station12, na.rm = TRUE))
 ```
 
+# PARTIE 1
+
 ```{r}
 plot(Sa$year,Sa$waves_length)
 ```
+
+## Méthode gev
+
+### Avec gev.fit
+
+Estimer les paramètres de la gev avec gev.fit
+```{r}
+library(ismev)
+
+GEVa=gev.fit(Sa$waves_length)
+
+# Intervalles de confiance à 95%
+IC=list()
+for (i in 1:3){
+  IC[[i]]=c(GEVa$mle[i]-1.96*GEVa$se[i],GEVa$mle[i]+1.96*GEVa$se[i])
+}
+IC
+```
+
+L'intervalle de confiance de gamma est très large...On peut pas savoir dans quel domaine d'attraction nous sommes.
+
+Avec vraissemblance profilé 
+```{r}
+profiled_llh=gev.profxi(GEVa,xlow=-0.6,xup=0.4,conf=0.95,nint=100)
+profiled_llh$conf
+```
+IC trop difficile à estimer via vraissemblance profilée donc renvoie NULL.
+
+Le mle donne un gamma proche de 0 donc peut être domaine d'attraction de Gumbell.
+
+Estimation de la value at risk pour les période 100,500,1000 ans 
+```{r}
+q1=1/100
+q2=1/500
+q3=1/1000
+n=dim(donneesVague)[1]/dim(Sa)[1]
+yq1=-log(1-q1)
+yq2=-log(1-q2)
+yq3=-log(1-q3)
+
+xq1=GEVa$mle[1]-(GEVa$mle[2]/GEVa$mle[3])*(1-(yq1)^(-GEVa$mle[3]))
+xq2=GEVa$mle[1]-(GEVa$mle[2]/GEVa$mle[3])*(1-(yq2)^(-GEVa$mle[3]))
+xq3=GEVa$mle[1]-(GEVa$mle[2]/GEVa$mle[3])*(1-(yq3)^(-GEVa$mle[3]))
+
+xq1
+xq2
+xq3
+```
+####TODO#### Intervalles de confiance à faire 
+
+```{r}
+gev.diag(GEVa)
+```
+Return level plot à peu près linéaire ce qui "valide" l'hypothèse gamma=0 domaine d'attraction de Gumbell
+
+
+
+### Avec fgev
+
+```{r}
+library(evd)
+
+fgev(Sa$waves_length,prob=q1)
+fgev(Sa$waves_length,prob=q2)
+fgev(Sa$waves_length,prob=q3)
+```
+
+Résultats similaires avec gev.fit
+
+####TODO#### Intervalles de confiance
+
+### Fitter directement une gumbell
+
+On a vu que l'hypothèse gamma=0 est pas trop irréaliste donc on décide d'ajuster directement notre modèle avec une gumbell :
+
+```{r}
+GUMa=gum.fit(Sa$waves_length)
+gum.diag(GUMa)
+```
+
+On peut redonner les Value at risk avec ce nouvel ajustement 
+```{r}
+xqg1=GUMa$mle[1]-GUMa$mle[2]*log(yq1)
+xqg2=GUMa$mle[1]-GUMa$mle[2]*log(yq2)
+xqg3=GUMa$mle[1]-GUMa$mle[2]*log(yq3)
+
+xqg1
+xqg2
+xqg3
+```
+
+### Comparaison de modèle
+
+Nous avons un modèle produit par gev.fit et un modèle de Gumbell produit par gum.fit. 
+La comparaison entre ces modèles consiste alors en la confrontation des hypothèses suivantes :
+H0:gamma=0 vs H1:gamma!=0
+
+```{r}
+l1=-GEVa$nllh
+l2=-GUMa$nllh
+D=2*(l1-l2)
+D
+```
+On remarque que D<3.84 (quantile d'ordre 0.95 d'une khi2(1))
+Donc avec un risque de 5% on garde l'hypothèse gamma=0.
+
+Meilleur modèle : GUMa qui donne les value at risk  :
+```{r}
+xqg1
+xqg2
+xqg3
+```
+
+# Méthode GPD(POT)
+
+```{r}
+mrlplot(Sa$waves_length)
+```
+à peu près constant à partir du seuil 4.2 (environ) qu'on choisit de retenir.
+Constance indique gamma=0 domaine d'attraction de gumbel (cohérent) 
+Choix précedent : seuil à 3.9 mais 30% de dépassement ce qui est assez élevé.
+
+value at risk pour 100,500,1000 ans 
+```{r}
+GPDa100=fpot(Sa$waves_length,4.2,npp=1,mper=100)
+xpot1=GPDa100$estimate[1]
+par(mfrow=c(2,2))
+plot(GPDa100)
+GPDa500=fpot(Sa$waves_length,4.2,npp=1,mper=500)
+xpot2=GPDa500$estimate[1]
+par(mfrow=c(2,2))
+plot(GPDa500)
+GPDa1000=fpot(Sa$waves_length,4.2,npp=1,mper=1000)
+xpot3=GPDa1000$estimate[1]
+par(mfrow=c(2,2))
+plot(GPDa1000)
+xpot1
+xpot2
+xpot3
+
+GPDa100
+```
+
+Estimations inférieures aux estimations par gumbell (modèle retenu pour la méthode gev). 
+à voir avec intervalles de confiances (à faire)
+seuil pas top déconnant avec un peu plus de 15% de dépassement de seuil.
+
+Choix de maximum en prenant les max par années, ce qui représente peu de données (52 observations) Ce choix facilitait les calculs des value at risk car les période était en années. 
+
+Reprendre l'étude avec des maximas par jour pour avoir plus d'observations ?
+
+
+
 
 
 
