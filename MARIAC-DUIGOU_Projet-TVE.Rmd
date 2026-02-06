@@ -1,0 +1,40 @@
+---
+title: "MARIAC-DUIGOU_PROJT-TVE"
+output: html_document
+date: "2026-02-06"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+load("donneesStations.RData")
+load("donneesVagues.RData")
+```
+
+```{r}
+library(dplyr)
+library(lubridate)
+
+Sa=data.frame("date"=donneesVague$date,"station4"=donneesVague$station4)
+Sb=data.frame("date"=donneesVague$date,"station12"=donneesVague$station12)
+
+Sa$date=as.POSIXct(Sa$date)
+Sb$date=as.POSIXct(Sb$date)
+Sa = Sa %>%
+  mutate(year = year(date)) %>%
+  group_by(year) %>%
+  summarise(waves_length = max(station4, na.rm = TRUE))
+Sb = Sb %>%
+  mutate(year = year(date)) %>%
+  group_by(year) %>%
+  summarise(waves_length = max(station12, na.rm = TRUE))
+```
+
+```{r}
+plot(Sa$year,Sa$waves_length)
+```
+
+
+
