@@ -1,0 +1,132 @@
+---
+title: "Untitled"
+author: "DMariac"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+```{r}
+#Chargement des données
+dataS <- load("donneesStations.RData")
+datav <- load("donneesVagues.RData")
+```
+
+
+```{r}
+info <- buoysInfos[4,]
+Sa <- as.data.frame(donneesVague[,c(1,7)])
+
+plot(Sa$date, Sa$station6)
+hist(Sa$station6)
+```
+
+# univarié
+
+## Première approche maxima par bloc
+
+```{r}
+library(evd)
+
+maxb <- numeric()
+
+for(i in 1:(floor(nrow(Sa)/720))){
+  maxb[i] <- max(Sa$station6[((i-1)*720+1):(i*720)])
+  i <-i+720
+}
+mbloc <- fgev(maxb)
+plot(maxb)
+```
+
+FORMAT ANNEE
+
+```{r}
+# année
+Sa$annee <- format(Sa$date, "%Y")
+
+# max par année (en gardant l'ordre chronologique)
+maxb <- tapply(Sa$station6, Sa$annee, max, na.rm = TRUE)
+maxb <- maxb[order(as.integer(names(maxb)))]
+
+plot(as.integer(names(maxb)), maxb, xlab="Année", ylab="Max annuel")
+
+mbloca <- fgev(maxb)
+```
+
+
+
+```{r}
+# intervalle de confiance pour chaque paramêtre estimé
+cat("Intervalle de confiance pour le paramètre de localisation : [", mbloca$estimate[1] - 1.96*mbloca$std.err[1], ",", mbloca$estimate[1] + 1.96*mbloca$std.err[1], "]\n")
+cat("Intervalle de confiance pour le paramètre d'échelle : [", mbloca$estimate[2] - 1.96*mbloca$std.err[2], ",", mbloca$estimate[2] + 1.96*mbloca$std.err[2], "]\n")
+cat("Intervalle de confiance pour le paramètre de forme : [", mbloca$estimate[3] - 1.96*mbloca$std.err[3], ",", mbloca$estimate[3] + 1.96*mbloca$std.err[3], "]\n")
+```
+
+
+```{r}
+# quantile de retour
+T <- 1000 #100 500 1000
+p <- 1 - 1/T
+mu <- as.numeric(mbloca$estimate[1])
+sigma <- as.numeric(mbloca$estimate[2])
+gamma <- as.numeric(mbloca$estimate[3])
+zT <- qgev(p, loc=mu, scale=sigma, shape=gamma)
+zT
+
+# pour T=100 ans : 8.540445
+# pour T=500 ans : 8.83687
+# pour T= 1000 ans : 8.930977
+
+```
+
+
+
+
+## Dépassement de seuil
+
+
+```{r}
+library(evd)
+a <- as.data.frame(donneesVague$station6)
+# choix du seuil
+mrlplot(a)
+
+
+```
+On prends un seuil de 6
+
+
+```{r}
+gpd <- fpot(donneesVague$station6, threshold=6)
+gpd
+```
+```{r}
+# intervalle de confiance pour chaque paramêtre estimé
+cat("Intervalle de confiance pour le paramètre de localisation : [", gpd$estimate[1] - 1.96*gpd$std.err[1], ",", gpd$estimate[1] + 1.96*gpd$std.err[1], "]\n")
+cat("Intervalle de confiance pour le paramètre d'échelle : [", gpd$estimate[2] - 1.96*gpd$std.err[2], ",", gpd$estimate[2] + 1.96*gpd$std.err[2], "]\n")
+
+```
+
+```{r}
+# quantile de retour
+
+u <- 6
+x <- as.data.frame(donneesVague[,7])
+n_years <- length(unique(format(Sa$date, "%Y")))
+
+Nu <- sum(x > u) # nombre d'excès
+lambda_u <- Nu / n_years # excès par an
+
+
+T <- 1000 #100 500 1000
+p <- 1 - 1/(lambda_u * T)
+sigma <- as.numeric(gpd$estimate[1])
+gamma <- as.numeric(gpd$estimate[2])
+zT <- qgpd(p, scale=sigma, shape=gamma)
+zT
+
+#pour T=100 ans : 2.63063 donc 8.63063
+# pour T=500 ans : 2.64841 donc 8.64841
+# pour T=1000 ans : 2.653404 donc 8.653404
+```
+
