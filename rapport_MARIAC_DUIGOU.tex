@@ -1,11 +1,20 @@
-\documentclass[a4paper,12pt]{article}
+\documentclass{article}
 
 \usepackage[utf8]{inputenc}
+\usepackage[french]{babel}
 \usepackage[T1]{fontenc}
-\usepackage[english]{babel}
+
+\usepackage[a4paper, left=2cm, right=2cm, top=2.5cm, bottom=2.5cm]{geometry}
+\usepackage{amssymb}
 \usepackage{amsmath}
-\usepackage{graphicx}
+\usepackage{graphicx} % pour les images
+\usepackage{listings} % pour intégrer un code R
+\usepackage{xcolor} % pour coloriser le code R intégré
+\usepackage{comment}
+\usepackage{float}
+\usepackage{amsthm}
 \usepackage{hyperref}
+
 
 \title{Projet : Vagues dans le golfe du Lion}
 \author{Damien MARIAC \and Lucien DUIGOU}
@@ -14,18 +23,36 @@
 \begin{document}
 
 \maketitle
-
+\newpage
 \tableofcontents
-
+\newpage
 \section{Introduction}
 
 L’objectif de ce projet est de modéliser le comportement extrême des vagues dans le golfe du Lion à
-l’aide de la théorie des valeurs extrêmes étudiée en cours. Dans un premier temps nous considérerons
-que la station 6 (avec une approche univariée) puis des paires de stations (approche bivariée).
+l’aide de la théorie des valeurs extrêmes étudiée en cours.
+\\
+\\
+Les données utilisées pour ce projet recensent les hauteurs de vagues de 20 stations différentes de 1961 à 2012 à un rythme de 1 observation par heure.
+\\
+\\
+Nous allons dans une première partie modéliser les hauteurs de vagues extrêmes de la station 6 à l’aide d’une approche univariée. Puis dans une deuxième partie
+nous allons modéliser la dépendance extrême entre la station 6 et 14 à l’aide d’une approche bivariée. Enfin, dans une troisième partie, nous allons modéliser la dépendance extrême entre des stations proches et éloignées à l’aide d’une approche bivariée.
+
 
 \section{Approche univariée}
 
+La station 6 est située à Saint Maxime et est représentée sur la carte ci-dessous.
 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\textwidth]{images/station6.png}
+\end{figure}
+
+\subsection{Maximum par bloc}
+
+Afin de modéliser les hauteurs de vagues extrêmes, nous allons utiliser la méthode du maximum par bloc. Nous allons diviser les données en blocs annuels et prendre le maximum de chaque bloc. Nous obtenons ainsi une série de 51 maxima annuels.
+\\
+Nous avons choisi de prendre des blocs annuels car cela correspond à une période de temps suffisamment longue pour capturer les variations saisonnières et les tendances à long terme en évitant de la dépendance entre les blocs, tout en étant suffisamment courte pour éviter de perdre des informations importantes sur les événements extrêmes.
 
 
 \end{document}
