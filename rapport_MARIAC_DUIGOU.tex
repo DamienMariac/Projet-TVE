@@ -45,14 +45,95 @@ La station 6 est située à Saint Maxime et est représentée sur la carte ci-de
 
 \begin{figure}[h]
     \centering
-    \includegraphics[width=0.8\textwidth]{images/station6.png}
+    \includegraphics[width=0.52\textwidth]{images/station6.png}
 \end{figure}
 
 \subsection{Maximum par bloc}
+
+\subsubsection{Ajustement d'une GEV}
 
 Afin de modéliser les hauteurs de vagues extrêmes, nous allons utiliser la méthode du maximum par bloc. Nous allons diviser les données en blocs annuels et prendre le maximum de chaque bloc. Nous obtenons ainsi une série de 51 maxima annuels.
 \\
 Nous avons choisi de prendre des blocs annuels car cela correspond à une période de temps suffisamment longue pour capturer les variations saisonnières et les tendances à long terme en évitant de la dépendance entre les blocs, tout en étant suffisamment courte pour éviter de perdre des informations importantes sur les événements extrêmes.
 
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.6\textwidth]{images/maxannee.png}
+\end{figure}
+
+Nous pouvons donc fit une distribution de GEV sur ces maxima annuels pour estimer les paramètres de la distribution. Nous récupérons deplus les écarts types de ces paramètres pour pouvoir construire des intervalles de confiance dont nous fixons le niveau à 95\%.
+\begin{itemize}
+    \item $\mu = 6.560243 \pm 0.2337362$
+    \item $\sigma = 0.7349365 \pm 0.1753661$
+    \item $\gamma = -0.2577396 \pm 0.2722555$
+\end{itemize}
+\vspace{0.5cm}
+Nous remarquons que le paramètre de forme $\gamma$ est négatif ce qui correspond à une Weibull, cependant, l'intervalle de confiance contient zéro, ce qui n'exclue pas que la distribution pourrait être de type Gumbel (si $\gamma = 0$) ou de type Fréchet (si $\gamma > 0$).
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.60\textwidth]{images/gevp1.png}
+\end{figure}
+
+\newpage
+
+\subsubsection{Période de retour}
+
+Avec les paramètre estimés, nous pouvons calculer les période de retour pour 100, 500 et 1000 ans. Comme nous avons utilisé des maxima annuels, la période de retour est définie par :
+\[
+%la formule
+\]
+
+Ce qui correspond respectivement à :
+\begin{itemize}
+    \item $p_{100} = 8.540445$ m
+    \item $p_{500} = 8.83687$ m
+    \item $p_{1000} = 8.930977$ m
+\end{itemize}
+
+Les périodes de retour semblent relativement proches les unes des autres, ce qui peut s'expliquer par le fait que la distribution de GEV ajustée a une queue bornée (avec un point terminal), ce qui limite la croissance des quantiles extrêmes au fur des années.
+\\
+\\
+Afin de consolider ces résultats, nous pouvons utiliser une autre méthode afin d'estimer les périodes de retour, comme la méthode de dépassement de seuil. En utilisant cette méthode, nous pouvons estimer les périodes de retour pour les mêmes quantiles et comparer les résultats obtenus avec ceux de la méthode du maximum par bloc.
+
+\subsection{Dépassement de seuil}
+
+L'avantage de la méthode de dépassement de seuil est qu'elle utilise plus d'informations que la méthode du maximum par bloc, car elle prend en compte tous les événements qui dépassent un certain seuil, plutôt que de ne considérer que les maxima annuels qui pourrait mettre de côté des valeurs extremes. Cependant, le choix du seuil est crucial et peut influencer les résultats obtenus.
+\\
+\\
+Afin de choisir un seuil approprié, nous pouvons utiliser le graphique "mean residual life plot" qui permet d'identifier une zone où les résidus moyens sont linéaires, ce qui suggère que les données suivent une distribution de type GPD au-delà de ce seuil.
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.65\textwidth]{images/mrlplot.png}
+\end{figure}
+
+En utilisant ce graphique, un seuil de 6m semble être un choix approprié car à partir de ce seuil, il y'a un virement (croissance puis décroissance) des résidus moyens.
+\\
+\\
+Après implémentation de la méthode, nous obtenons paramêtres avec leur intervalle de confiance à 95\% suivants :
+
+\begin{itemize}
+    \item $\sigma = 0.9649 \pm 0.08161178 $
+    \item $\gamma = -0.3613 \pm 0.06414328 $
+\end{itemize}
+\vspace{0.5cm}
+Après avoir estimé les paramètre de la GPD, nous pouvons calculer les périodes de retour pour les mêmes quantiles que précédement. Nous obtenons ainsi :
+
+\begin{itemize}
+    \item $p_{100} = 2.63063$ m donc une hauteur de vague de $6 + 2.63063 = 8.63063$m
+    \item $p_{500} = 2.64841$ m donc une hauteur de vague de $6 + 2.64841 = 8.64841$m
+    \item $p_{1000} = 2.653404$ m donc une hauteur de vague de $6 + 2.653404 = 8.653404$m
+\end{itemize}
+
+Les périodes de retour obtenues avec la méthode de dépassement de seuil semblent ne pas "exploser" plus le temps avance du au paramêtre de forme plus bas que celui de la méthode du maximum par bloc.
+Néanmoins, les périodes de retour obtenues avec la méthode de dépassement de seuil sont relativement proches de celles obtenues avec la méthode du maximum par bloc, ce qui nous conforte sur la hauteur maximale d'une vague dans les prochaines années.
+\vspace{1cm}
+
+L'analyse univariée de la station 6 nous a permis d'estimer les paramètres de la distribution de GEV et de GPD, ainsi que les périodes de retour. Nous pouvons approfondir cette analyse en modélisant la dépendance extrême entre la station 6 et une autre station, à l'aide d'une approche bivariée.
+
+
+\section{Approche bivariée}
+
+Dans cette section, nous allons modéliser la dépendance extrême entre la station 6 et la station 14, qui est située proche de Sète.
 
 \end{document}
