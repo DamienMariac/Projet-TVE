@@ -204,6 +204,11 @@ INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm7.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm5.tfm
 OUTPUT rapport_MARIAC_DUIGOU.toc
+INPUT ./images/stations.png
+INPUT ./images/stations.png
+INPUT ./images/stations.png
+INPUT ./images/stations.png
+INPUT ./images/stations.png
 INPUT ./images/station6.png
 INPUT ./images/station6.png
 INPUT ./images/station6.png
