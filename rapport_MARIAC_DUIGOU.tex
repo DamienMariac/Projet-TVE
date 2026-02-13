@@ -140,4 +140,90 @@ L'analyse univariée de la station 6 nous a permis d'estimer les paramètres de 
 
 Dans cette section, nous allons modéliser la dépendance extrême entre la station 6 et la station 14, qui est située proche de Sète.
 
+Il semblerait d'après le graphique ci-dessous que les extrêmas des 2 stations aient une dépendance. En effet, on observe que les données avec des grands cordonnées (écarté sur les axes x et y) sont relativement proches de la droite d'équation $y = x$ ce qui suggère que les extrêmes des 2 stations ont tendance à se produire simultanément.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.65\textwidth]{images/vagues614.png}
+\end{figure}
+
+Afin de fit une distribution bivariée, nous allons transformer les marginales de (distribution de station 6 et de station 14) en distribution de type Frechet.
+Pour cela, nous appliquons la la fonction de repartition de la GEV avec les parametre estimé sur chaque marginale afin de les transformer en des distributions uniforme, puis nous appliquons la fonction quantile de la distribution de Frechet pour obtenir des données avec des marginales de type Frechet.
+\\
+\\
+Autrement dit, notons $X_1$ et $X_2$ les hauteurs de vagues de la station 6 et de la station 14 respectivement, $F$ la fonction de repartition de la GEV avec les parametres estimé et $G$ la fonction quantile de la distribution de Frechet, alors nous allons appliquer la transformation suivante :
+\[
+Y_1 = G(F(X_1)) \quad \text{et} \quad
+Y_2 = G(F(X_2))
+\]
+Et donc $Y_1$ et $Y_2$ sont des variables aléatoires avec des marginales de type Frechet.
+
+\subsection{Ajustement d'une distribution bivariée}
+
+\subsubsection{Ajustement d'un modèle - logistique, asymétrique logistique et Hüsler Reiss}
+
+Après avoir transformé les données, nous pouvons ajuster un modèle pour modéliser la dépendance extrême entre les deux stations.
+
+\vspace{1.5cm}
+\underline{\textbf{Modèle logistique :}}
+\\
+\\
+Le modèle logistique est défini par la fonction suivante :
+\[
+G(x,x') = \exp\left(-\left(x^{-1/\alpha} + x'^{-1/\alpha}\right)^\alpha\right)
+\]
+Avec $\alpha \in ]0,1]$ le paramètre de dépendance. Lorsque $\alpha = 1$, les variables sont indépendantes, et lorsque $\alpha$ tend vers 0, les variables sont parfaitement dépendantes (même variable).
+\\
+\\
+Après ajustement du modèle logistique, nous obtenons un paramètre de dépendance $\alpha = 0.7500$, ce qui suggère une dépendance élevé entre les deux stations. Avec ce modèle, nous obtenons une critère d'AIC de $75167.04$.
+
+\vspace{1.5cm}
+\underline{\textbf{Modèle asymetrique logistique :}}
+\\
+\\
+Le modèle logistique est défini par la fonction suivante :
+\[
+G(x,x') = \exp\left(-(1-t_1) x^{-1} - (1-t_2) x'^{-1} - \left(t_1 x^{-1/\alpha} + t_2 x'^{-1/\alpha}\right)^\alpha\right)
+\]
+Avec $\alpha \in ]0,1]$ le paramètre de dépendance, $t_1 \in [0,1]$ et $t_2 \in [0,1]$ les paramètres d'asymétrie. Lorsque $t_1 = t_2$, le modèle asymétrique logistique se réduit au modèle logistique.
+\\
+\\
+Après ajustement du modèle asymétrique logistique, nous obtenons les paramètres suivants :
+\begin{itemize}
+    \item $\alpha = 0.6500$
+    \item $t_1 = 0.75$
+    \item $t_2 = 0.75$
+    \item AIC = $74734.89$
+\end{itemize}
+
+Avec ce modèle, nous obtenons des valeurs de $t_1$ et $t_2$ égales et proches de $1$, ce qui suggère que le modèle asymétrique logistique peut se réduire au modèle logistique. De plus, le critère d'AIC du modèle asymétrique logistique est légèrement inférieur à celui du modèle logistique, ce qui suggère que bien que le modèle asymétrique possède plus de paramètres, il n'apporte pas une amélioration significative de l'ajustement par rapport au modèle logistique.
+Ce dont on aurait pu se douter vu la distribution relativement symétrique des données sur le graphique ci dessus.
+
+\vspace{1.5cm}
+\underline{\textbf{Modèle Hüsler Reiss :}}
+\\
+\\
+Le modèle Hüsler Reiss est défini par la fonction suivante :
+\[
+V(x,x') = \frac{1}{x} \Phi\left(\frac{\lambda}{2} + \frac{1}{\lambda} \log\left(\frac{x'}{x}\right)\right) + \frac{1}{x'} \Phi\left(\frac{\lambda}{2} + \frac{1}{\lambda} \log\left(\frac{x}{x'}\right)\right)
+\]
+Avec $\lambda > 0$ le paramètre de dépendance. Lorsque $\lambda$ tend vers 0, les variables sont parfaitement dépendantes (même variable), et lorsque $\lambda$ tend vers l'infini, les variables sont indépendantes.
+Et $\Phi$ est la fonction de répartition de la loi normale centrée réduite.
+\\
+\\
+Après ajustement du modèle Hüsler Reiss, nous obtenons un paramètre de dépendance $\lambda$ égal à $1$, ce qui suggère la même conclusion que les 2 autres modèles, à savoir une dépendance élevé entre les deux stations. Avec ce modèle, nous obtenons une critère d'AIC de $75641.18$ qui est plus élevé que dans le cas du modèle logistique.
+
+\vspace{1.5cm}
+
+\subsubsection{Paramètre de dépendance}
+
+Nous pouvons également estimer le paramètre de dépendance $\chi$ qui est défini par :
+\[
+\chi = \lim_{u \to 1} P(F_{X_2}(X_2) > u | F_{X_1}(X_1) > u)
+\]
+Où $F_{X_i}$ est la fonction de répartition de la marginale $X_i$.
+
+
+
+
 \end{document}
