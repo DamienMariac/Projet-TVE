@@ -126,7 +126,7 @@ xqg1
 xqg2
 xqg3
 ```
-bien plus élevés que pour le précédent modèle.
+bien plus élevés que pour le précédent modèle. Normal car pour un gamma négatif, nous sommes dans le domaine d'attraction de Weibull qui suggère qu'on ne dépassera pas une certaine limite (visiblement dépassée lorsqu'on fit une Gumbell)
 
 ### Comparaison de modèle
 
@@ -187,6 +187,88 @@ Les graph sont vraiment pas top...
 Choix de maximum en prenant les max par années, ce qui représente peu de données (52 observations) Ce choix facilitait les calculs des value at risk car les période était en années. 
 
 Reprendre l'étude avec des maximas par jour/mois (attention à la dépendance dûe à la saisonnalité) pour avoir plus d'observations ?
+
+# Bivariée 
+
+```{r}
+plot(Sa$waves_length,Sb$waves_length)
+```
+
+Estimation des modèles gev des deux stations
+```{r}
+fa=gum.fit(Sa$waves_length)
+fb=gev.fit(Sb$waves_length)
+```
+Pour la station 14, l'estimation de gamma est positive ce qui traduit un domaine d'attraction de Frêchet (queue lourde (plus que pour une gumbell) proportionnelle à une puissance négative). Son intervalle de confiance oscille entre négatif et positif donc faire comparaison de modèle avec une Gumbel :
+```{r}
+fbg=gum.fit(Sb$waves_length)
+
+l1=-fb$nllh
+l2=-fbg$nllh
+D=2*(l1-l2)
+D
+```
+D<<3.84 donc Gumbell "meileur" modèle.
+```{r}
+fb=fbg
+```
+
+Mise sous même échelle : transformation en Frêchet(1) et comparaison par plot 
+```{r}
+fsa=qgev(pgev(Sa$waves_length, loc=fa$mle[1], scale=fa$mle[2],shape=0),loc=1,shape=1,scale=1)
+fsb=qgev(pgev(Sb$waves_length, loc=fb$mle[1], scale=fb$mle[2],shape=0),loc=1,shape=1,scale=1)
+
+plot(fsa,fsb,xlim=c(0,max(max(fsa),max(fsb))),ylim=c(0,max(max(fsa),max(fsb))))
+```
+
+Les points semblent proches des axes mais en restent éloignés pour des fortes valeurs, sans pour autant se rapprocher de la première bisectrice. Cela donne une première intuition qu'il existe une dépendance entre les deux stations mais faible. A vérifier avec l'estimation de la fonction de Pickands qui donne une information visuelle de la dépendance et permet d'estimer theta qui donne une valeur quantifiable de la dépendance. On pourra également observer les limites des fonction khi(u) et khi_bar(u) pour u tend vers 1. Le model fitté de la MGEV en donne également une estimation (un plot de ce modèle donne la visualisation de la fonction de Pickands)
+
+Modèle MGEV
+```{r}
+mod_log=fbvevd(cbind(Sa$waves_length,Sb$waves_length),model='log')
+mod_alog=fbvevd(cbind(Sa$waves_length,Sb$waves_length),model='alog')
+mod_nlog=fbvevd(cbind(Sa$waves_length,Sb$waves_length),model='neglog')
+
+# Choix de modèle 
+AIC(mod_log,mod_alog,mod_nlog)
+BIC(mod_log,mod_alog,mod_nlog)
+```
+
+Plus petit AIC : le modèle logistique négatif avec autant de degrés de liberté donc garder ce modèle (mod_nlog)
+
+Résultats et graphs :
+```{r}
+mod_nlog
+plot(mod_nlog)
+theta=abvnonpar(data=cbind(Sa$waves_length,Sb$waves_length))*2
+theta
+```
+
+La fonction de dépendance donne l'intuition qu'il y a une dépendance mais pas excessive. La valeur de alpha est d'environ 0.54 et de theta environ 1.53. Donc il y a dépendance et la "force" de la dépendance est moyenne. 
+
+Graphes de khi et khi_bar 
+```{r}
+Sa=data.frame("date"=donneesVague$date,"station6"=donneesVague$station6)
+Sb=data.frame("date"=donneesVague$date,"station14"=donneesVague$station14)
+
+Sa$date=as.POSIXct(Sa$date)
+Sb$date=as.POSIXct(Sb$date)
+
+chiplot(cbind(Sa$station6,Sb$station14))
+```
+
+En limite, le khi est éloigné de 0 en 0.5 (traduit une dépendance asymptotique de force d'environ 0.5). Le khi_bar est peu éloigné de 1 entre 0.7 et 0.8 (traduit une indépendance asymptotique de force d'environ 0.7 ou 0.8).
+
+On s'attendait à une plus forte dépendance étant donné la proximité des stations. 
+
+
+
+
+
+
+
+
+
 
 
 
