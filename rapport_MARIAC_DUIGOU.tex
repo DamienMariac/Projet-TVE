@@ -85,7 +85,20 @@ Nous remarquons que le paramètre de forme $\gamma$ est négatif ce qui correspo
 
 Avec les paramètre estimés, nous pouvons calculer les période de retour pour 100, 500 et 1000 ans. Comme nous avons utilisé des maxima annuels, la période de retour est définie par :
 \[
-%la formule
+z_T =
+\begin{cases}
+\mu + \dfrac{\sigma}{\gamma}
+\left[
+\left(-\log\left(1 - \dfrac{1}{T}\right)\right)^{-\gamma}
+- 1
+\right]
+& \text{si } \gamma \neq 0, \\[0.4cm]
+
+\mu - \sigma \log\left(
+-\log\left(1 - \dfrac{1}{T}\right)
+\right)
+& \text{si } \gamma = 0.
+\end{cases}
 \]
 
 Ce qui correspond respectivement à :
@@ -111,7 +124,7 @@ Afin de choisir un seuil approprié, nous pouvons utiliser le graphique "mean re
     \includegraphics[width=0.65\textwidth]{images/mrlplot.png}
 \end{figure}
 
-En utilisant ce graphique, un seuil de 6m semble être un choix approprié car à partir de ce seuil, il y'a un virement (croissance puis décroissance) des résidus moyens.
+En utilisant ce graphique, un seuil de 6m semble être un choix approprié. En effet, à partir de 6 m, le graphique semble présenter une zone approximativement linéaire, compatible avec l’hypothèse GPD.
 \\
 \\
 Après implémentation de la méthode, nous obtenons paramêtres avec leur intervalle de confiance à 95\% suivants :
@@ -136,7 +149,7 @@ Néanmoins, les périodes de retour obtenues avec la méthode de dépassement de
 L'analyse univariée de la station 6 nous a permis d'estimer les paramètres de la distribution de GEV et de GPD, ainsi que les périodes de retour. Nous pouvons approfondir cette analyse en modélisant la dépendance extrême entre la station 6 et une autre station, à l'aide d'une approche bivariée.
 
 
-\section{Approche bivariée}
+\section{Approche bivariée pour 2 stations choisies}
 
 Dans cette section, nous allons modéliser la dépendance extrême entre la station 6 et la station 14, qui est située proche de Sète.
 
@@ -215,15 +228,54 @@ Après ajustement du modèle Hüsler Reiss, nous obtenons un paramètre de dépe
 
 \vspace{1.5cm}
 
-\subsubsection{Paramètre de dépendance}
+
+\subsubsection{Paramètre de dépendance $\theta$}
+
+Il existe également un paramètre de dépendance $\theta$ qui permet de mesurer la
+dépendance des extremes entre 2 marginales. En ayant supposé que les
+marginales suivent une distribution de type Frechet, le paramètre de dépendance $\theta$ est défini par :
+\[
+G(x,x) = \exp\left(-\theta \frac{1}{x}\right)
+\]
+Où $G$ est la fonction de répartition de la distribution bivariée ajustée.
+\\
+Son interpretation est la suivante : lorsque $\theta = 2$, les variables sont indépendantes puisque $G(x,x) = exp(\frac{-1}{x}) exp(\frac{-1}{x})$
+ce qui correspond au produit des marginales. Lorsque $\theta = 1$, les variables sont parfaitement dépendantes (même variable) puisque $G(x,x) = exp(\frac{-1}{x})$ ce qui correspond bien au max entre $x$ et $x$.
+\\
+\\
+Après ajustement du modèle logistique, nous obtenons un paramètre de dépendance $\theta$ égal à $1.407525$, ce qui suggère une dépendance plus ou moins élevé entre les deux stations, ce qui est cohérent avec les résultats obtenus avec les autres modèles.
+
+
+\subsubsection{Paramètre de dépendance $\chi$}
 
 Nous pouvons également estimer le paramètre de dépendance $\chi$ qui est défini par :
 \[
 \chi = \lim_{u \to 1} P(F_{X_2}(X_2) > u | F_{X_1}(X_1) > u)
 \]
 Où $F_{X_i}$ est la fonction de répartition de la marginale $X_i$.
+\\
+\\
+La fonction $\chi$ peut se réécrire avec un petit jeu de réecriture de la manière suivante :
+\[
+\chi (u) = 2-\frac{\log C(u,u)}{\log(u)} \longrightarrow \chi
+\]
+Où $C$ est la copule de la distribution bivariée.
+\\
+Ainsi, en utilisant les données transformées avec des marginales de type Frechet, nous pouvons estimer la copule et calculer $\chi(u)$ pour différentes valeurs de $u$ proches de 1. En observant le comportement de $\chi(u)$ à mesure que $u$ approche de 1, nous pouvons estimer la valeur limite $\chi$ qui nous donnera une indication sur la dépendance extrême entre les deux stations.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=0.65\textwidth]{images/chiplot.png}
+\end{figure}
+
+En observant le graphique ci-dessus, nous pouvons estimer une valeur de $\chi$ d'environ $0.45$, ce qui suggère une dépendance moyenne des extrêmes entre les deux stations. En effet, une valeur de $\chi$ proche de 1 indique une forte dépendance extrême, tandis qu'une valeur proche de 0 indique l'indépendance des extrêmes.
 
 
 
+\section{Implémentation d'une Approche bivariée pour 2 stations proches (puis éloignées)}
+
+
+\newpage
+
+\section*{Annexe}
 
 \end{document}

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.1.28)  13 FEB 2026 14:53
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.1.28)  14 FEB 2026 18:01
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -443,7 +443,7 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 \openout5 = `rapport_MARIAC_DUIGOU.toc'.
 
  [2]
-<images/stations.png, id=69, 624.3325pt x 536.0025pt>
+<images/stations.png, id=80, 624.3325pt x 536.0025pt>
 File: images/stations.png Graphic file (type png)
 <use images/stations.png>
 Package pdftex.def Info: images/stations.png  used on input line 38.
@@ -458,60 +458,50 @@ Underfull \hbox (badness 10000) in paragraph at lines 31--44
 
  []
 
-<images/station6.png, id=71, 841.1425pt x 533.995pt>
+<images/station6.png, id=82, 841.1425pt x 533.995pt>
 File: images/station6.png Graphic file (type png)
 <use images/station6.png>
 Package pdftex.def Info: images/station6.png  used on input line 52.
 (pdftex.def)             Requested size: 251.52443pt x 159.67825pt.
 [3 <./images/stations.png> <./images/station6.png>]
-<images/maxannee.png, id=79, 860.21375pt x 525.965pt>
+<images/maxannee.png, id=90, 860.21375pt x 525.965pt>
 File: images/maxannee.png Graphic file (type png)
 <use images/maxannee.png>
 Package pdftex.def Info: images/maxannee.png  used on input line 65.
 (pdftex.def)             Requested size: 290.22107pt x 177.45335pt.
-<images/gevp1.png, id=80, 860.21375pt x 525.965pt>
+<images/gevp1.png, id=91, 860.21375pt x 525.965pt>
 File: images/gevp1.png Graphic file (type png)
 <use images/gevp1.png>
 Package pdftex.def Info: images/gevp1.png  used on input line 79.
 (pdftex.def)             Requested size: 290.22107pt x 177.45335pt.
  [4 <./images/maxannee.png> <./images/gevp1.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 98--102
+Underfull \hbox (badness 10000) in paragraph at lines 111--115
 
  []
 
-<images/mrlplot.png, id=90, 860.21375pt x 525.965pt>
+<images/mrlplot.png, id=100, 860.21375pt x 525.965pt>
 File: images/mrlplot.png Graphic file (type png)
 <use images/mrlplot.png>
-Package pdftex.def Info: images/mrlplot.png  used on input line 111.
+Package pdftex.def Info: images/mrlplot.png  used on input line 124.
 (pdftex.def)             Requested size: 314.40001pt x 192.23645pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 105--113
+Underfull \hbox (badness 10000) in paragraph at lines 118--126
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 114--118
+Underfull \hbox (badness 10000) in paragraph at lines 127--131
 
  []
 
 [5 <./images/mrlplot.png>]
-<images/vagues614.png, id=97, 850.17625pt x 528.97626pt>
+<images/vagues614.png, id=110, 850.17625pt x 528.97626pt>
 File: images/vagues614.png Graphic file (type png)
 <use images/vagues614.png>
-Package pdftex.def Info: images/vagues614.png  used on input line 147.
+Package pdftex.def Info: images/vagues614.png  used on input line 160.
 (pdftex.def)             Requested size: 314.40001pt x 195.62129pt.
 
-Underfull \hbox (badness 10000) in paragraph at lines 150--155
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 168--172
-
- []
-
-[6 <./images/vagues614.png>]
-Underfull \hbox (badness 10000) in paragraph at lines 174--179
+Underfull \hbox (badness 10000) in paragraph at lines 163--168
 
  []
 
@@ -520,42 +510,96 @@ Underfull \hbox (badness 10000) in paragraph at lines 181--185
 
  []
 
-
+[6 <./images/vagues614.png>]
 Underfull \hbox (badness 10000) in paragraph at lines 187--192
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 203--207
+Underfull \hbox (badness 10000) in paragraph at lines 194--198
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 209--215
+Underfull \hbox (badness 10000) in paragraph at lines 200--205
 
  []
 
-[7] [8] (./rapport_MARIAC_DUIGOU.aux)
+
+Underfull \hbox (badness 10000) in paragraph at lines 216--220
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 222--228
+
+ []
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 232.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\theta' on input line 232.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 232.
+
+[7]
+Overfull \hbox (16.28477pt too wide) in paragraph at lines 239--247
+\T1/cmr/m/n/10 Son in-ter-pre-ta-tion est la sui-vante : lorsque $\OML/cmm/m/it/10 ^^R \OT1/cmr/m/n/10 = 2$\T1/cmr/m/n/10 , les va-riables sont in-dé-pen-dantes puisque $\OML/cmm/m/it/10 G\OT1/cmr/m/n/10 (\OML/cmm/m/it/10 x; x\OT1/cmr/m/n/10 ) = \OML/cmm/m/it/10 exp\OT1/cmr/m/n/10 ([])\OML/cmm/m/it/10 exp\OT1/cmr/m/n/10 ([])$
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 239--247
+
+ []
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 249.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `\chi' on input line 249.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 249.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 254--259
+
+ []
+
+<images/chiplot.png, id=121, 933.4875pt x 562.1pt>
+File: images/chiplot.png Graphic file (type png)
+<use images/chiplot.png>
+Package pdftex.def Info: images/chiplot.png  used on input line 267.
+(pdftex.def)             Requested size: 314.40001pt x 189.3189pt.
+[8 <./images/chiplot.png>] [9] (./rapport_MARIAC_DUIGOU.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
  ***********
 Package rerunfilecheck Info: File `rapport_MARIAC_DUIGOU.out' has not changed.
-(rerunfilecheck)             Checksum: EB48C76E3182CB34ED45DFB7851F6CAF;1951.
+(rerunfilecheck)             Checksum: 498481ADEC97B79DD5A42E1BDA3E61D2;2783.
  ) 
 Here is how much of TeX's memory you used:
- 14142 strings out of 474222
- 215854 string characters out of 5748733
- 1934975 words of memory out of 5000000
- 36199 multiletter control sequences out of 15000+600000
+ 14157 strings out of 474222
+ 216158 string characters out of 5748733
+ 1935975 words of memory out of 5000000
+ 36210 multiletter control sequences out of 15000+600000
  571337 words of font info for 71 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 75i,7n,79p,619b,471s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 75i,11n,79p,619b,538s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx1000.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx1200.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfbx1440.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1000.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1200.pfb></usr/share/texmf/fonts/type1/public/cm-super/sfrm1728.pfb>
-Output written on rapport_MARIAC_DUIGOU.pdf (8 pages, 526648 bytes).
+Output written on rapport_MARIAC_DUIGOU.pdf (9 pages, 590918 bytes).
 PDF statistics:
- 189 PDF objects out of 1000 (max. 8388607)
- 135 compressed objects within 2 object streams
- 20 named destinations out of 1000 (max. 500000)
- 111 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 206 PDF objects out of 1000 (max. 8388607)
+ 149 compressed objects within 2 object streams
+ 24 named destinations out of 1000 (max. 500000)
+ 132 words of extra memory for PDF output out of 10000 (max. 10000000)
 
