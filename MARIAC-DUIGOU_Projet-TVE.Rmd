@@ -231,10 +231,9 @@ mod_nlog=fbvevd(cbind(Sa$waves_length,Sb$waves_length),model='neglog')
 
 # Choix de modèle 
 AIC(mod_log,mod_alog,mod_nlog)
-BIC(mod_log,mod_alog,mod_nlog)
 ```
 
-Plus petit AIC : le modèle logistique négatif avec autant de degrés de liberté donc garder ce modèle (mod_nlog)
+Plus petit AIC : le modèle logistique négatif donc garder ce modèle (mod_nlog)
 
 Résultats et graphs :
 ```{r}
@@ -244,7 +243,7 @@ theta=abvnonpar(data=cbind(Sa$waves_length,Sb$waves_length))*2
 theta
 ```
 
-La fonction de dépendance donne l'intuition qu'il y a une dépendance mais pas excessive. La valeur de alpha est d'environ 0.54 et de theta environ 1.53. Donc il y a dépendance et la "force" de la dépendance est moyenne. 
+La fonction de dépendance donne l'intuition qu'il y a une dépendance mais pas excessive. La valeur de alpha est d'environ 0.54 et de theta environ 1.53. Donc il y a dépendance et la "force" de la dépendance est moyenne. La densité spectral montre que la densité s'affaiblit fortement lorsqu'on approche 0 et 1 indiquant que nous ne sommes pas dans un cas d'indépendance.
 
 Graphes de khi et khi_bar 
 ```{r}
@@ -261,16 +260,161 @@ En limite, le khi est éloigné de 0 en 0.5 (traduit une dépendance asymptotiqu
 
 On s'attendait à une plus forte dépendance étant donné la proximité des stations. 
 
+# Partie bivariée avec la station la plus proche de la staion 6 
+
+```{r}
+Sa=data.frame("date"=donneesVague$date,"station6"=donneesVague$station6)
+Sa$date=as.POSIXct(Sa$date)
+Sa = Sa %>%
+  mutate(year = year(date)) %>%
+  group_by(year) %>%
+  summarise(waves_length = max(station6, na.rm = TRUE))
+
+Sp=data.frame("date"=donneesVague$date,"station4"=donneesVague$station4)
+Sp$date=as.POSIXct(Sp$date)
+Sp = Sp %>%
+  mutate(year = year(date)) %>%
+  group_by(year) %>%
+  summarise(waves_length = max(station4, na.rm = TRUE))
+```
+
+domaine d'attraction de Gumbell ou non ? 
+```{r}
+fp=gev.fit(Sp$waves_length)
+fpg=gum.fit(Sp$waves_length)
+
+l1=-fp$nllh
+l2=-fpg$nllh
+D=2*(l1-l2)
+D
+```
+D<3.84 donc modèle de gumbell préférable. 
+```{r}
+fp=fpg
+```
+
+Mise sous une même échelle :
+```{r}
+fsa=qgev(pgev(Sa$waves_length, loc=fa$mle[1], scale=fa$mle[2],shape=0),loc=1,shape=1,scale=1)
+fsp=qgev(pgev(Sp$waves_length, loc=fp$mle[1], scale=fp$mle[2],shape=0),loc=1,shape=1,scale=1)
+
+plot(fsa,fsp,xlim=c(0,max(max(fsa),max(fsp))),ylim=c(0,max(max(fsa),max(fsp))))
+```
+Aux extrêmes, les points sont éloignés de la première bisectrice mais ne semblent pas tendre vers les axes non plus. Cela caracyérise l'existence d'une dépendance entre les deux stations mais qui semble être faible. 
 
 
 
+Modèle MGEV
+```{r}
+mod_log=fbvevd(cbind(Sa$waves_length,Sp$waves_length),model='log')
+mod_alog=fbvevd(cbind(Sa$waves_length,Sp$waves_length),model='alog',std.err=FALSE)
+mod_nlog=fbvevd(cbind(Sa$waves_length,Sp$waves_length),model='neglog')
+
+# Choix de modèle 
+AIC(mod_log,mod_alog,mod_nlog)
+```
+Le plus petit AIC est pour le modèle negative logistique donc on garde mod_nlog
+
+Résultats et graphs :
+```{r}
+mod_nlog
+plot(mod_nlog, which=c(1,2,3,4,5))
+theta=abvnonpar(data=cbind(Sa$waves_length,Sp$waves_length))*2
+theta
+```
+alpha environ égal à 0.42. L'estimateur de la fonction de dépendance semble indiquer que les deux station ne sont pas trop dépendantes (moins que pour les stations 6 et 14 en tout cas)
+theta environ egal à 1.85 ce qui est assez proche de 2 donc dépendance plutôt faible. On s'attendait au contraire car les deux stations sont très proches.
+
+Graphes de khi et khi_bar 
+```{r}
+Sa=data.frame("date"=donneesVague$date,"station6"=donneesVague$station6)
+Sp=data.frame("date"=donneesVague$date,"station4"=donneesVague$station4)
+
+Sa$date=as.POSIXct(Sa$date)
+Sp$date=as.POSIXct(Sp$date)
+
+chiplot(cbind(Sa$station6,Sp$station4))
+```
+La valeur de khi est très proche de 0 indiquant une faible dépendance asymptotique entre les deux stations. Le khi_bar est entre 0.25 et 0.75. Ce qui signifie qu'on est dans un cas d'indépendance asymptotique et que les valeurs de khi_bar donnent la force de dépendance au seuil u. 
 
 
+# Partie bivariée avec la station la plus éloignée de la staion 6 
+```{r}
+Se=data.frame("date"=donneesVague$date,"station19"=donneesVague$station19)
+Sa=data.frame("date"=donneesVague$date,"station6"=donneesVague$station6)
+Sa$date=as.POSIXct(Sa$date)
+Sa = Sa %>%
+  mutate(year = year(date)) %>%
+  group_by(year) %>%
+  summarise(waves_length = max(station6, na.rm = TRUE))
 
+Se=data.frame("date"=donneesVague$date,"station19"=donneesVague$station19)
+Se$date=as.POSIXct(Se$date)
+Se = Se %>%
+  mutate(year = year(date)) %>%
+  group_by(year) %>%
+  summarise(waves_length = max(station19, na.rm = TRUE))
+```
 
+domaine d'attraction de Gumbell ou non ? 
+```{r}
+fe=gev.fit(Se$waves_length)
+feg=gum.fit(Se$waves_length)
 
+l1=-fe$nllh
+l2=-feg$nllh
+D=2*(l1-l2)
+D
+```
+D<3.84 donc on accepte l'hypothèse que la station 19 est dans le domaine d'attraction de Gumbell
 
+```{r}
+fe=feg
+```
 
+Mise sous même échelle : transformation en Frêchet(1) et comparaison par plot 
+```{r}
+fsa=qgev(pgev(Sa$waves_length, loc=fa$mle[1], scale=fa$mle[2],shape=0),loc=1,shape=1,scale=1)
+fse=qgev(pgev(Se$waves_length, loc=fe$mle[1], scale=fe$mle[2],shape=0),loc=1,shape=1,scale=1)
+
+plot(fsa,fse,xlim=c(0,max(max(fsa),max(fse))),ylim=c(0,max(max(fsa),max(fse))))
+```
+
+Même constat que pour l'étude précédente
+
+Modèle MGEV
+```{r}
+mod_log=fbvevd(cbind(Sa$waves_length,Se$waves_length),model='log')
+mod_alog=fbvevd(cbind(Sa$waves_length,Se$waves_length),model='alog')
+mod_nlog=fbvevd(cbind(Sa$waves_length,Se$waves_length),model='neglog')
+
+# Choix de modèle 
+AIC(mod_log,mod_alog,mod_nlog)
+```
+Le plus faible AIC est pour le modèle asymétrique logistique que l'on gardera 
+
+Résultats et graphs :
+```{r}
+mod_alog
+plot(mod_alog)
+theta=abvnonpar(data=cbind(Sa$waves_length,Se$waves_length))*2
+theta
+```
+
+alpha environ égal à 0.31 ce qui est faible. On peut penser que les deux stations sont faiblement dépendante. Cependant la valeur de théta qui est d'environ 1.92 qui est très proche de 2, caractérisant une très faible dépendance entre les deux. Ces remarques se valident par l'estimateur de la fonction de dépendance qui est assez proche de la droite x=1 (On rappelle qu'une indépendance totale donne theoriquement une fonction de dépendance constante égale à 1). En t=1/2, elle atteint même 0.96 environ (théta/2). Lorsqu'on est en situation d'indépendance, elle vaut 1. La densité spectral a une masse très forte en 0.18 environ.
+
+Graphes de khi et khi_bar 
+```{r}
+Sa=data.frame("date"=donneesVague$date,"station6"=donneesVague$station6)
+Se=data.frame("date"=donneesVague$date,"station19"=donneesVague$station19)
+
+Sa$date=as.POSIXct(Sa$date)
+Se$date=as.POSIXct(Se$date)
+
+chiplot(cbind(Sa$station6,Se$station19))
+```
+
+khi=0 et on a khi_bar environ égal à 0.2<1 Cela signifie qu'on est dans un cas d'indépendance asymptotique et que les valeurs de khi_bar en u donnent la force de la dépendance au seuil u.
 
 
 
