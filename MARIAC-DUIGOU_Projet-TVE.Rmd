@@ -260,23 +260,67 @@ En limite, le khi est éloigné de 0 en 0.5 (traduit une dépendance asymptotiqu
 
 On s'attendait à une plus forte dépendance étant donné la proximité des stations. 
 
+
+
+
 # Partie bivariée avec la station la plus proche de la staion 6 
 
 ```{r}
 Sa=data.frame("date"=donneesVague$date,"station6"=donneesVague$station6)
 Sa$date=as.POSIXct(Sa$date)
+
+Sp=data.frame("date"=donneesVague$date,"station4"=donneesVague$station4)
+Sp$date=as.POSIXct(Sp$date)
+```
+
+```{r}
+plot(Sa$station6,Sp$station4,main="Hauteur des vagues des deux stations",xlab="Hauteur des vagues de la station 6",ylab="Hauteur des vagues de la station 4",col="red")
+```
+
+```{r}
+fa=fgev(Sa$station6)
+fp=fgev(Sp$station4)
+```
+
+```{r}
+fsa=qgev(pgev(Sa$station6, loc=fa$estimate[1], scale=fa$estimate[2],shape=fa$estimate[3]),loc=1,shape=1,scale=1)
+fsp=qgev(pgev(Sp$station4, loc=fp$estimate[1], scale=fp$estimate[2],shape=fp$estimate[3]),loc=1,shape=1,scale=1)
+
+plot(fsa,fsp,xlim=c(0,max(max(fsa),max(fsp))),ylim=c(0,max(max(fsa),max(fsp))),main="Hauteur des vagues des deux stations",xlab="Hauteur des vagues de la station 6",ylab="Hauteur des vagues de la station 4",col="red")
+```
+Modèle MGEV
+```{r}
+mod_log=fbvevd(cbind(Sa$station6,Sp$station4),model='log')
+mod_alog=fbvevd(cbind(Sa$station6,Sp$station4),model='alog')
+mod_hr=fbvevd(cbind(Sa$station6,Sp$station4),model='hr')
+
+# Choix de modèle 
+AIC(mod_log,mod_alog,mod_hr)
+```
+
+```{r}
+mod_alog
+```
+
+```{r}
+chiplot(cbind(Sa$station6,Sp$station4))
+```
+
+
+
+## En prenant les maximas par année
+```{r}
 Sa = Sa %>%
   mutate(year = year(date)) %>%
   group_by(year) %>%
   summarise(waves_length = max(station6, na.rm = TRUE))
 
-Sp=data.frame("date"=donneesVague$date,"station4"=donneesVague$station4)
-Sp$date=as.POSIXct(Sp$date)
 Sp = Sp %>%
   mutate(year = year(date)) %>%
   group_by(year) %>%
   summarise(waves_length = max(station4, na.rm = TRUE))
 ```
+
 
 domaine d'attraction de Gumbell ou non ? 
 ```{r}
@@ -387,9 +431,10 @@ Modèle MGEV
 mod_log=fbvevd(cbind(Sa$waves_length,Se$waves_length),model='log')
 mod_alog=fbvevd(cbind(Sa$waves_length,Se$waves_length),model='alog')
 mod_nlog=fbvevd(cbind(Sa$waves_length,Se$waves_length),model='neglog')
+mod_hr=fbvevd(cbind(Sa$waves_length,Se$waves_length),model='hr')
 
 # Choix de modèle 
-AIC(mod_log,mod_alog,mod_nlog)
+AIC(mod_log,mod_alog,mod_nlog,mod_hr)
 ```
 Le plus faible AIC est pour le modèle asymétrique logistique que l'on gardera 
 
